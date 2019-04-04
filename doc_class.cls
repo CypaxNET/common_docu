@@ -9,6 +9,7 @@
 \RequirePackage{geometry}
 \RequirePackage{fancyhdr}
 \RequirePackage{tabularx}
+\RequirePackage[hidelinks,unicode,colorlinks=true,urlcolor=blue,citecolor=black,linkcolor=black]{hyperref}
 \usepackage{graphicx}
 \usepackage{multirow}
 \usepackage{makecell}
@@ -23,6 +24,7 @@
 \AtBeginDocument{%
 	\pagenumbering{arabic}%
 	\maketitle%
+	\pagestyle{doc_general}	
 	\tableofcontents
 	\newpage
 }
@@ -47,6 +49,13 @@
 % use sans serif font by default
 \renewcommand{\familydefault}{\sfdefault}
 
+
+% no ident for new paragraphs
+\parindent 0pt
+%the vertical space between new paragraphs
+\parskip 10pt
+
+\newcommand{\DocClassVersion}{1.0}
 
 % commands for project management
 \def\project#1{\gdef\@project{#1}}
@@ -104,12 +113,6 @@
 						{\@project} & {\shortstack{\large\centering\arraybackslash\textbf{\@doctitle}}} & {\@projectsub} \\
 						\hline
 					\end{tabularx}
-					%\begin{tabularx}{\textwidth}{|l|>{\centering\arraybackslash}X|ll|}
-					%	\hline
-					%	\multirow{2}{*}{\textbf\@project} & \multirow{2}{*}{\shortstack{\large\centering\arraybackslash\textbf{\@doctitle} \\ \@projectsub}} & {Version:} & {\textbf\@projectversion}\\ \cline{3-4}
-					%	  & & {Date}: & {\textbf\@date} \\
-					%	\hline
-					%\end{tabularx}
 				\egroup
 			}
 		}
@@ -118,14 +121,12 @@
 				\bgroup
 					\def\arraystretch{1.3}%	1 is the default
 					\scriptsize
-					\begin{tabularx}{\textwidth}{lXr}
+					\begin{tabularx}{\textwidth}{llXr}
 						\hline
-						Document version:~\@projectversion & Date:~\@date & {Page~\thepage~/~\pageref{LastPage}} \\
+						Document version:~\@projectversion & Date:~\@date & Document class version:~\DocClassVersion & {Page~\thepage~/~\pageref{LastPage}} \\
 					\end{tabularx}
 				\egroup
 			}
 		}
 }
-
-\pagestyle{doc_general}	
 
