@@ -10,7 +10,6 @@
 \RequirePackage{geometry}
 \RequirePackage{fancyhdr}
 \RequirePackage[xcdraw]{xcolor}
-\RequirePackage[hidelinks,unicode,colorlinks=true,urlcolor=blue,citecolor=black,linkcolor=black]{hyperref}
 \RequirePackage{hhline}
 \RequirePackage{xparse}
 \RequirePackage{xspace}
@@ -26,9 +25,7 @@
 \usepackage{ifthen}
 \usepackage[utf8]{inputenc}
 \usepackage[official]{eurosym}
-
-
-\definecolor{defaultgrey}{HTML}{DCDCDC}
+\RequirePackage[hidelinks,unicode,colorlinks=true,urlcolor=blue,citecolor=black,linkcolor=black]{hyperref}
 
 % options handling
 
@@ -62,8 +59,6 @@
 \renewcommand*\sfdefault{phv}	% Helvetica for sans serif family
 % use sans serif font by default
 \renewcommand{\familydefault}{\sfdefault}
-
-\newcommand{\CellGray}[1]{\cellcolor{defaultgrey}\textbf{#1}}
 
 % no ident for new paragraphs
 \parindent 0pt
