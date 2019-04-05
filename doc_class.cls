@@ -6,15 +6,29 @@
 \LoadClass[11pt]{article}
 
 % packages used by default
+\RequirePackage{float}
 \RequirePackage{geometry}
 \RequirePackage{fancyhdr}
-\RequirePackage{tabularx}
+\RequirePackage[xcdraw]{xcolor}
 \RequirePackage[hidelinks,unicode,colorlinks=true,urlcolor=blue,citecolor=black,linkcolor=black]{hyperref}
+\RequirePackage{hhline}
+\RequirePackage{xparse}
+\RequirePackage{xspace}
+\RequirePackage{xstring}
+\RequirePackage{tabularx}
+\RequirePackage{tabulary}
+\RequirePackage{colortbl}
+\usepackage{fp}
 \usepackage{graphicx}
 \usepackage{multirow}
 \usepackage{makecell}
 \usepackage{lastpage}
 \usepackage{ifthen}
+\usepackage[utf8]{inputenc}
+\usepackage[official]{eurosym}
+
+
+\definecolor{defaultgrey}{HTML}{DCDCDC}
 
 % options handling
 
@@ -49,6 +63,7 @@
 % use sans serif font by default
 \renewcommand{\familydefault}{\sfdefault}
 
+\newcommand{\CellGray}[1]{\cellcolor{defaultgrey}\textbf{#1}}
 
 % no ident for new paragraphs
 \parindent 0pt
@@ -130,3 +145,62 @@
 		}
 }
 
+
+
+%
+% Risk analysis commands
+% =====================================
+
+\definecolor{colorRiskRed}{RGB}{242,100,100}
+\definecolor{colorRiskYellow}{RGB}{255,235,120}
+
+\newcommand*{\NumProbabilityInconceivable}{\empty}
+\newcommand*{\NumProbabilityImprobable}{\empty}
+\newcommand*{\NumProbabilityRemotelyPossible}{\empty}
+\newcommand*{\NumProbabilityOccasional}{\empty}
+\newcommand*{\NumProbabilityProbable}{\empty}
+\newcommand*{\NumProbabilityFrequently}{\empty}
+
+\newcommand*{\NumActionsPerDay}{\empty}
+\newcommand*{\NumYearsLifeTime}{\empty}
+
+
+\newcommand{\ProbabilityInconceivable}[1]
+{
+  \renewcommand*{\NumProbabilityInconceivable}{#1}
+}
+
+\newcommand{\ProbabilityImprobable}[1]
+{
+  \renewcommand*{\NumProbabilityImprobable}{#1}
+}
+
+\newcommand{\ProbabilityRemotelyPossible}[1]
+{
+  \renewcommand*{\NumProbabilityRemotelyPossible}{#1}
+}
+
+\newcommand{\ProbabilityOccasional}[1]
+{
+  \renewcommand*{\NumProbabilityOccasional}{#1}
+}
+
+\newcommand{\ProbabilityProbable}[1]
+{
+  \renewcommand*{\NumProbabilityProbable}{#1}
+}
+
+\newcommand{\ProbabilityFrequently}[1]
+{
+  \renewcommand*{\NumProbabilityFrequently}{#1}
+}
+
+\newcommand{\ActionsPerDay}[1]
+{
+  \renewcommand*{\NumActionsPerDay}{#1}
+}
+
+\newcommand{\YearsLifeTime}[1]
+{
+  \renewcommand*{\NumYearsLifeTime}{#1}
+}
