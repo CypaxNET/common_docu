@@ -17,6 +17,7 @@
 \RequirePackage{tabularx}
 \RequirePackage{tabulary}
 \RequirePackage{colortbl}
+\usepackage{titlesec}
 \usepackage{fp}
 \usepackage{graphicx}
 \usepackage{multirow}
@@ -25,6 +26,9 @@
 \usepackage{ifthen}
 \usepackage[utf8]{inputenc}
 \usepackage[official]{eurosym}
+\usepackage{soul}
+\usepackage{enumitem}
+\usepackage{numprint}
 \RequirePackage[hidelinks,unicode,colorlinks=true,urlcolor=blue,citecolor=black,linkcolor=black]{hyperref}
 
 % options handling
@@ -51,6 +55,13 @@
 				headsep=20mm,
 				footskip=10mm}
 
+
+\setuldepth{a}
+
+
+\npthousandsep{\,}
+\npdecimalsign{.}
+
 % disable floats by default in order to not confuse Word users
 \renewcommand*{\fps@figure}{!ht}
 \renewcommand*{\fps@table}{!ht}
@@ -63,7 +74,16 @@
 % no ident for new paragraphs
 \parindent 0pt
 %the vertical space between new paragraphs
-\parskip 10pt
+\parskip 1em
+
+
+\setlist[itemize]{nosep}
+\setlist[enumerate]{nosep}
+
+\DeclareTextFontCommand{\emph}{\bfseries}
+
+%\renewcommand{\emph}[1]{\textbf{#1}}
+
 
 \newcommand{\DocClassVersion}{1.0}
 
@@ -109,6 +129,7 @@
 
 \newcolumntype{C}{>{\centering\arraybackslash}l}
 \newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
 
 \fancypagestyle{doc_general}{
 		% setup header bar with logo
@@ -140,62 +161,10 @@
 		}
 }
 
+\setcounter{secnumdepth}{4}
 
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
 
-%
-% Risk analysis commands
-% =====================================
-
-\definecolor{colorRiskRed}{RGB}{242,100,100}
-\definecolor{colorRiskYellow}{RGB}{255,235,120}
-
-\newcommand*{\NumProbabilityInconceivable}{\empty}
-\newcommand*{\NumProbabilityImprobable}{\empty}
-\newcommand*{\NumProbabilityRemotelyPossible}{\empty}
-\newcommand*{\NumProbabilityOccasional}{\empty}
-\newcommand*{\NumProbabilityProbable}{\empty}
-\newcommand*{\NumProbabilityFrequently}{\empty}
-
-\newcommand*{\NumActionsPerDay}{\empty}
-\newcommand*{\NumYearsLifeTime}{\empty}
-
-
-\newcommand{\ProbabilityInconceivable}[1]
-{
-  \renewcommand*{\NumProbabilityInconceivable}{#1}
-}
-
-\newcommand{\ProbabilityImprobable}[1]
-{
-  \renewcommand*{\NumProbabilityImprobable}{#1}
-}
-
-\newcommand{\ProbabilityRemotelyPossible}[1]
-{
-  \renewcommand*{\NumProbabilityRemotelyPossible}{#1}
-}
-
-\newcommand{\ProbabilityOccasional}[1]
-{
-  \renewcommand*{\NumProbabilityOccasional}{#1}
-}
-
-\newcommand{\ProbabilityProbable}[1]
-{
-  \renewcommand*{\NumProbabilityProbable}{#1}
-}
-
-\newcommand{\ProbabilityFrequently}[1]
-{
-  \renewcommand*{\NumProbabilityFrequently}{#1}
-}
-
-\newcommand{\ActionsPerDay}[1]
-{
-  \renewcommand*{\NumActionsPerDay}{#1}
-}
-
-\newcommand{\YearsLifeTime}[1]
-{
-  \renewcommand*{\NumYearsLifeTime}{#1}
-}
