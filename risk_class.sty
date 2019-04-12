@@ -150,20 +150,15 @@
 }
 
 
-% Preceeds a number with up to 4 zeros
-% i.e. 1 => 00001, 42 => 00042, 4711 => 04711
-\newcommand*\ReqAddLeadingZeros[1]{\ifnum#1<10{0000#1}\else\ifnum#1<100{000#1}\else\ifnum#1<1000{00#1}\else\ifnum#1<10000{0#1}\else#1\fi\fi\fi\fi}
-
-
 % Removes the project prefix part in a full ID
-% i.e. "MYPROJECT-SYSRS-4711" results in "SYSRS-4711"
-% or   "MYPROJECT-SRS-GUI-4711" results in "SRS-GUI-4711"
-\newcommand{\ReqRemoveProjectPrefix}[1]
+% i.e. "MYPROJECT-SYSRS-4711" results in "SYSRS-04711"
+% or   "MYPROJECT-SRS-GUI-4711" results in "SRS-GUI-04711"
+\newcommand{\AddLeadingZeros}[1]
 {%
-  \StrCount{#1}{-}[\slashcount]%                 % get the number of "-"s
-  \StrBehind[\slashcount]{#1}{-}[\reqnum]%       % item number is the part behind the last "-"
-  \StrBefore[\slashcount]{#1}{-}[\prefix]%       % prefix is the part before the last "-"
-  \prefix-\ReqAddLeadingZeros{\reqnum}%          % build new ID
+  \StrCount{#1}{-}[\slashcount]%                         % get the number of "-"s
+  \StrBehind[\slashcount]{#1}{-}[\reqnum]%               % item number is the part behind the last "-"
+  \StrBefore[\slashcount]{#1}{-}[\prefix]%               % prefix is the part before the last "-"
+  \prefix-{\nplpadding{5}\npthousandsep{}\numprint{\reqnum}}%  % build new ID
 }%
 
 
@@ -203,8 +198,8 @@
 \newcommand\ReqListParent[1]
 {
   \@ifundefined{r@sec:#1}
-  {$\rhd$\space{}\ReqRemoveProjectPrefix{#1}\newline}
-  {$\rhd$\space{}\hyperref[req:#1]{\ReqRemoveProjectPrefix{#1}~\nameref{sec:#1}~(chapter \ref{sec:#1} on page \pageref{sec:#1})}\newline}
+  {$\rhd$\space{}\AddLeadingZeros{#1}\newline}
+  {$\rhd$\space{}\hyperref[req:#1]{\AddLeadingZeros{#1}~\nameref{sec:#1}~(chapter \ref{sec:#1} on page \pageref{sec:#1})}\newline}
 }
 
 % Splits parent IDs and and lists them
@@ -218,7 +213,7 @@
 {
   \IfSubStr{#1}{,}
   {\textbf{Consequential risks:} & \ReqListParents{#1}}
-  {\textbf{Consequential risks:} & $\rhd$\space{}\ReqRemoveProjectPrefix{#1}}
+  {\textbf{Consequential risks:} & $\rhd$\space{}\AddLeadingZeros{#1}}
   \\ \hline
 }
 
@@ -320,8 +315,8 @@
 \newcommand\ReqListReference[1]
 {
   \@ifundefined{r@req:#1}
-  {$\rightarrow$\space{}\ReqRemoveProjectPrefix{#1}\newline}
-  {\hyperref[req:#1]{\ReqRemoveProjectPrefix{#1}}\newline}
+  {$\rightarrow$\space{}\AddLeadingZeros{#1}\newline}
+  {\hyperref[req:#1]{\AddLeadingZeros{#1}}\newline}
 }
 \makeatother
 
@@ -428,8 +423,8 @@
 \newcommand\ReqListMitigation[1]%
 {%
 	\@ifundefined{r@sec:#1}%
-	{$\rhd$\space{}\ReqRemoveProjectPrefix{#1}\newline}%
-	{$\rhd$\space{}\hyperref[req:#1]{\ReqRemoveProjectPrefix{#1}~\nameref{sec:#1}}\newline}%
+	{$\rhd$\space{}\AddLeadingZeros{#1}\newline}%
+	{$\rhd$\space{}\hyperref[req:#1]{\AddLeadingZeros{#1}~\nameref{sec:#1}}\newline}%
 }%
 \makeatother%
 
@@ -497,6 +492,7 @@
 %\makeatother
 
 
+\gdef\ListOfIDs{}
 
 % Defines a risk environment
 % Parameters:
@@ -505,14 +501,20 @@
 % risk text
 \newenvironment{Risk}[5] % ID-Prefix, ID
 {%
-	\def\MyVariants{\RiskVariants{#3}}
-	\def\MyStatus{\RiskStatus{#4}}
-	\def\MyDate{#5}
+  \IfSubStr{\ListOfIDs}{#1#2,}%
+  {\PackageError{risk_class}{ID #1#2 already exists.}{Do not assign ID multiple times.}}%
+  {%
+  \label{req:#1#2}%
+  \expandafter\gdef\expandafter\ListOfIDs\expandafter{\ListOfIDs#1#2,}%
+	\def\MyVariants{\RiskVariants{#3}}%
+	\def\MyStatus{\RiskStatus{#4}}%
+	\def\MyDate{#5}%
   \footnotesize%
 	\tabularx{\textwidth}{|l|X|}%
  	\hline%
- 	\textbf{ID} & \textbf{\textsc{\ReqRemoveProjectPrefix{#1#2}}}\\%
+ 	\textbf{ID} & \textbf{\AddLeadingZeros{#1#2}}\\%
  	\hline%
+  }%
 }%
 {%
   \endtabularx%
@@ -536,7 +538,7 @@
   \begin{table}[H]
     \begin{tabular}{|p{.22\textwidth}|p{.74\textwidth}|}
       \hline
-      \textbf{ID:} & \textbf{\textsc{\ReqRemoveProjectPrefix{#1#2}}} \\ \hline
+      \textbf{ID:} & \textbf{\AddLeadingZeros{#1#2}}\\ \hline
       \textbf{Type:} & #3 \\ \hline
     }
     %END area
