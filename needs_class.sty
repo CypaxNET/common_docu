@@ -1,0 +1,86 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{needs_class}
+
+\RequirePackage{xparse}
+\RequirePackage{xpatch}
+\RequirePackage{xstring}
+\RequirePackage[warn]{textcomp}
+\RequirePackage{wasysym} 
+\RequirePackage{hhline}
+\usepackage{expl3}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{ifthen}
+\usepackage{fp}
+\usepackage{pgffor}
+\usepackage{etoolbox}
+\usepackage{pgffor}
+\usepackage{pdftexcmds}
+
+
+% Prints the user role
+\newcommand{\UserNeedRole}[1]%
+{%
+	\textbf{Role} & \GeneratedText{As a} \ParameterText{#1},\\%
+}%
+
+% Prints the situation
+\newcommand{\UserNeedSituation}[1]%
+{%
+	\textbf{Situation} & \ParameterText{#1}, \\%
+}%
+
+% Prints the demand
+\newcommand{\UserNeedDemand}[1]%
+{%
+	\textbf{Demand} & \GeneratedText{I want} \ParameterText{#1}, \\%
+}%
+
+% Prints the purpose
+\newcommand{\UserNeedPurpose}[1]%
+{%
+	\textbf{Purpose} & \GeneratedText{so that} \ParameterText{#1}. \\ \hline %
+}%
+
+
+
+%
+% User needs environments
+% =====================================
+
+
+\gdef\ListOfIDs{}
+
+% Defines a user need environment
+% Parameters:
+% ID prefix (i.e. MYPROJECT-NEEDS-)
+% risk ID (i.e. 4711)
+% risk text
+\newenvironment{UserNeed}[5] % ID-Prefix, ID
+{%
+  \IfSubStr{\ListOfIDs}{#1#2,}%
+  {\PackageError{needs_class}{ID #1#2 already exists.}{Do not assign ID multiple times.}}%
+  {%
+  \label{req:#1#2}%
+  \expandafter\gdef\expandafter\ListOfIDs\expandafter{\ListOfIDs#1#2,}%
+	\def\MyVariants{\ItemVariants{#3}}%
+	\def\MyStatus{\ItemStatus{#4}}%
+	\def\MyDate{#5}%
+  \footnotesize%
+	\tabularx{\textwidth}{|l|X|}%
+ 	\hline%
+ 	\textbf{ID} & \textbf{\AddLeadingZeros{#1#2}}\\%
+ 	\hline%
+  }%
+}%
+{%
+  \endtabularx%
+  \def\myheight{\dimexpr \parskip + \arraystretch pt \relax}%
+	\par\nopagebreak\vspace{-\myheight}%
+  \begin{tabularx}{\textwidth}{|XX|lR|lR|}%
+	\textbf{Applicable variants} & \MyVariants & \textbf{Status} & \MyStatus & \textbf{Date} & \MyDate \\%
+	\hline%
+	\end{tabularx}%
+}%
+
+\ExplSyntaxOff
