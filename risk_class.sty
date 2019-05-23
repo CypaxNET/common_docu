@@ -22,25 +22,8 @@
 % Definitions of status colors
 % =====================================
 
-\definecolor{colorGrayText}{RGB}{100,100,100}
-\definecolor{colorBlackText}{RGB}{0,0,0}
-
-
-\definecolor{colorApproved}{RGB}{198,239,206}
-\definecolor{colorProposed}{RGB}{255,235,156}
-\definecolor{colorObsolete}{RGB}{242,242,242}
-\definecolor{colorUnknown}{RGB}{255,199,206}
-\definecolor{colorReqBlue}{RGB}{219,229,241}
-\definecolor{colorReqRed}{RGB}{242,219,219}
-
 \definecolor{colorRiskRed}{RGB}{242,100,100}
 \definecolor{colorRiskYellow}{RGB}{255,235,120}
-
-
-
-\newcommand{\RiskParameterText}[1]{\textcolor{colorBlackText}{\emph{#1}}}
-
-\newcommand{\RiskGeneratedText}[1]{\textcolor{colorGrayText}{#1}}
 
 
 % 1: name
@@ -150,189 +133,14 @@
 }
 
 
-% Removes the project prefix part in a full ID
-% i.e. "MYPROJECT-SYSRS-4711" results in "SYSRS-04711"
-% or   "MYPROJECT-SRS-GUI-4711" results in "SRS-GUI-04711"
-\newcommand{\AddLeadingZeros}[1]
-{%
-  \StrCount{#1}{-}[\slashcount]%                         % get the number of "-"s
-  \StrBehind[\slashcount]{#1}{-}[\reqnum]%               % item number is the part behind the last "-"
-  \StrBefore[\slashcount]{#1}{-}[\prefix]%               % prefix is the part before the last "-"
-  \prefix-{\nplpadding{5}\npthousandsep{}\numprint{\reqnum}}%  % build new ID
-}%
-
-
-% Prints two columns with highlighted item status
-\newcommand{\RiskStatus}[1]
-{%
-  \ifthenelse{\equal{#1}{approved}}%
-  {%
-    \colorbox{colorApproved}{\textsc{#1}}%
-  }%
-  {%
-    {\ifthenelse{\equal{#1}{proposed}}%
-      {%
-        \colorbox{colorProposed}{\textsc{#1}}%
-      }%
-      {\ifthenelse{\equal{#1}{obsolete}}%
-        {%
-          \colorbox{colorObsolete}{\textsc{#1}}%
-        }%
-        {\ifthenelse{\equal{#1}{future\space{}feature}}%
-          {%
-            \colorbox{colorObsolete}{\textsc{#1}}%
-          }%
-          {%
-            \colorbox{colorUnknown}{\textsc{#1}}%
-          }%
-        }%
-      }%
-    }%
-  }%
-}%
-
-
-
-
-% Draws a trinagle, pointing to the parent item ID
-\newcommand\ReqListParent[1]
-{
-  \@ifundefined{r@sec:#1}
-  {$\rhd$\space{}\AddLeadingZeros{#1}\newline}
-  {$\rhd$\space{}\hyperref[req:#1]{\AddLeadingZeros{#1}~\nameref{sec:#1}~(chapter \ref{sec:#1} on page \pageref{sec:#1})}\newline}
-}
-
-% Splits parent IDs and and lists them
-\NewDocumentCommand\ReqListParents{>{\SplitList{,}}m}
-{
-  \ProcessList{#1}{\ReqListParent}
-}
-
 % Prints two columns with the item parent(s)
-\newcommand{\ReqParents}[1]
+\renewcommand{\ItemParents}[1]
 {
   \IfSubStr{#1}{,}
-  {\textbf{Consequential risks:} & \ReqListParents{#1}}
+  {\textbf{Consequential risks:} & \ItemListParents{#1}}
   {\textbf{Consequential risks:} & $\rhd$\space{}\AddLeadingZeros{#1}}
   \\ \hline
 }
-
-
-% Lists an item variant.
-% If a label exists in the format 'sec:<name-of-the-variant>' a reference is added.
-\makeatletter%
-\newcommand\ReqListVariant[1]%
-{%
-  \@ifundefined{r@sec:#1}%
-  {\textbullet~#1\newline}%
-  {\textbullet~#1\space{}\begin{small}(see\space{}chapter\space{}``\nameref{sec:#1}'')\end{small}\newline}%
-}%
-\makeatother%
-
-% Splits and processes a list of applicable variants
-\NewDocumentCommand\ReqListVariants{>{\SplitList{,}}m}%
-{%
-  \ProcessList{#1}{\ReqListVariant}%
-}%
-
-% Prints two columns with the applicable variant(s)
-\newcommand{\RiskVariants}[1]%
-{%
-	\IfStrEq{#1}{\empty}{}{}%
-  \IfSubStr{#1}{,}%
-  {\ReqListVariants{#1}\vspace{-1em}}%
-  {#1}%
-}%
-
-
-% Prints a item flag.
-\newcommand\ReqListFlag[1]
-{
-  \ifthenelse{\equal{#1}{flag-SAFE}}
-  {
-    \XBox\space{}risk\space{}mitigation\space{}measure \newline
-  }
-  {
-    \ifthenelse{\equal{#1}{flag-SW}}
-    {
-      \XBox\space{}realized\space{}in\space{}software\space{}\newline
-    }
-    {
-      \ifthenelse{\equal{#1}{flag-HW}}
-      {
-        \XBox\space{}realized\space{}in\space{}hardware \newline
-      }
-      {
-        \ifthenelse{\equal{#1}{flag-MECH}}
-        {
-          \XBox\space{}realized\space{}in\space{}mechanics \newline
-        }
-        {
-          \ifthenelse{\equal{#1}{flag-GUI}}
-          {
-            \XBox\space{}related\space{}to\space{}GUI \newline
-          }
-          {
-            #1 \newline
-          }
-        }
-      }
-    }
-  }
-}
-
-% Prints a list of item flags.
-\NewDocumentCommand\ReqListFlags{>{\SplitList{,}}m}
-{
-  \ProcessList{#1}{\ReqListFlag}
-}
-
-
-% Prints two columns with a list of item flags
-\newcommand\ReqFlags[1]
-{
-  \textbf{Flags:} & \ReqListFlags{#1}
-  \\ \hline
-}
-
-
-% Prints two columns with the last change date of the item
-\newcommand{\RiskDate}[1]
-{
-  \textbf{Date} & #1 \\ \hline
-}
-
-% Prints two columns with a comment
-\newcommand{\ReqComment}[1]
-{
-  \textbf{Comment:} & #1 \\ \hline
-}
-
-
-% Lists the IDs of areferenced an item.
-% If a label exists in the format 'req:<id-of-the-referenced-item>' a reference-link is added.
-\makeatletter
-\newcommand\ReqListReference[1]
-{
-  \@ifundefined{r@req:#1}
-  {$\rightarrow$\space{}\AddLeadingZeros{#1}\newline}
-  {\hyperref[req:#1]{\AddLeadingZeros{#1}}\newline}
-}
-\makeatother
-
-
-% Prints two columns with a list of references to other items
-\NewDocumentCommand\ReqReferences{>{\SplitList{,}}m}
-{
-  \textbf{References:} &
-  \ProcessList{#1}{\ReqListReference}
-  \\ \hline
-}
-
-
-
-
-
 
 
 
@@ -340,24 +148,24 @@
 % Prints the possible hazard
 \newcommand{\RiskPotHazard}[1]%
 {%
-	\textbf{Hazard} & \RiskParameterText{#1} \RiskGeneratedText{might pose a hazard}\\%
+	\textbf{Hazard} & \ParameterText{#1} \GeneratedText{might pose a hazard}\\%
 }%
 
 
 \newcommand{\RiskHazardFor}[1]%
 {%
-	\vspace{-1em}\textbf{Hazard for} & \RiskGeneratedText{for} \begin{itemize}% %the neg. vspace is to get rid of the line break after \end{itemize}
+	\vspace{-1em}\textbf{Hazard for} & \GeneratedText{for} \begin{itemize}% %the neg. vspace is to get rid of the line break after \end{itemize}
 	\foreach \x in {#1} {%
-	    \item \RiskParameterText{\x}%
+	    \item \ParameterText{\x}%
 	} \end{itemize}\\%
 }%
 
 
 \newcommand{\RiskISOE}[1]%
 {%
-	\vspace{-1em}\textbf{Inner sequence} & \RiskGeneratedText{when the following inner sequence of events occurs:} \begin{enumerate}% %the neg. vspace is to get rid of the line break after \end{itemize}
+	\vspace{-1em}\textbf{Inner sequence} & \GeneratedText{when the following inner sequence of events occurs:} \begin{enumerate}% %the neg. vspace is to get rid of the line break after \end{itemize}
 	\foreach \x in {#1} {%
-		\item \RiskParameterText{\x}%
+		\item \ParameterText{\x}%
 	} \end{enumerate}\\%	
 }%
 
@@ -365,22 +173,22 @@
 \newcommand{\RiskIIP}[1]%
 {%
 	\gdef\riskIIP{#1}%	
-	\textbf{Inner probability} & \RiskGeneratedText{which is expected to happen} \RiskParameterText{#1} \RiskGeneratedText{( a chance of 1 : \numprint{\GetInnerProbabilityValue{#1}} / \GetInnerProbabilityText{#1} )} \\%
+	\textbf{Inner probability} & \GeneratedText{which is expected to happen} \ParameterText{#1} \GeneratedText{( a chance of 1 : \numprint{\GetInnerProbabilityValue{#1}} / \GetInnerProbabilityText{#1} )} \\%
 }%
 
 
 % Prints the situations the hazard applies to
 \newcommand{\RiskHazardousSituation}[1]%
 {%
-  \textbf{Hazardous situation} & \RiskGeneratedText{and which would lead to the hazardous situation of} \RiskParameterText{#1}\RiskGeneratedText{.} \\%
+  \textbf{Hazardous situation} & \GeneratedText{and which would lead to the hazardous situation of} \ParameterText{#1}\GeneratedText{.} \\%
 }%
 
 
 \newcommand{\RiskOSOE}[1]%
 {%
-	\vspace{-1em}\textbf{Outer sequence} & \RiskGeneratedText{In this situation, outside of the system the following events may occur:} \begin{enumerate}% %the neg. vspace is to get rid of the line break after \end{itemize}
+	\vspace{-1em}\textbf{Outer sequence} & \GeneratedText{In this situation, outside of the system the following events may occur:} \begin{enumerate}% %the neg. vspace is to get rid of the line break after \end{itemize}
 	\foreach \x in {#1} {%
-		\item \RiskParameterText{\x}%
+		\item \ParameterText{\x}%
 	} \end{enumerate} \\%		
 }%
 
@@ -388,15 +196,15 @@
 \newcommand{\RiskIOP}[1]%
 {%
 	\gdef\riskIOP{#1}%
-  	\textbf{Outer probability} & \RiskGeneratedText{which is expected to happen} \RiskParameterText{#1} \RiskGeneratedText{( a chance of 1 : \numprint{\GetOuterProbabilityValue{#1}} )} \\%
+  	\textbf{Outer probability} & \GeneratedText{which is expected to happen} \ParameterText{#1} \GeneratedText{( a chance of 1 : \numprint{\GetOuterProbabilityValue{#1}} )} \\%
 }%
 
 % Prints the possible harms
 \newcommand{\RiskHarm}[1]%
 {%
-	\vspace{-1em}\textbf{Harm} & \RiskGeneratedText{and which would cause a harm of} \begin{itemize}% %the neg. vspace is to get rid of the line break after \end{itemize}
+	\vspace{-1em}\textbf{Harm} & \GeneratedText{and which would cause a harm of} \begin{itemize}% %the neg. vspace is to get rid of the line break after \end{itemize}
 		\foreach \x in {#1} {%
-			\item \RiskParameterText{\x}%
+			\item \ParameterText{\x}%
 	} \end{itemize} \\%		
 }%
 
@@ -404,23 +212,23 @@
 \newcommand{\RiskIS}[1]%
 {%
 	\gdef\riskIS{#1}%
-	\textbf{Initial severity} & \RiskGeneratedText{which is considered to be} \RiskParameterText{#1} \RiskGeneratedText{in this context.}\\%
+	\textbf{Initial severity} & \GeneratedText{which is considered to be} \ParameterText{#1} \GeneratedText{in this context.}\\%
 }%
 
 
 \newcommand{\RiskIR}%
 {%
-	\textbf{Initial risk} & \RiskGeneratedText{%
+	\textbf{Initial risk} & \GeneratedText{%
 	With a \riskIS~severity and a total probability of 1 : \GetTotalProbabilityValue{\riskIIP}{\riskIOP} this risk is initially evaluated as} %
 	\FPeval{\result}{clip(\GetInnerProbabilityValue{\riskIIP} * \GetOuterProbabilityValue{\riskIOP})}%
-	\ifnum \result < \csuse{riskAcceptance\riskIS}\relax\def\x{\colorbox{colorRiskRed}{\RiskParameterText{not acceptable}}}\else\def\x{\colorbox{colorRiskYellow}{\RiskParameterText{acceptable}}}\fi\newline\textsc{\x}.%
+	\ifnum \result < \csuse{riskAcceptance\riskIS}\relax\def\x{\colorbox{colorRiskRed}{\ParameterText{not acceptable}}}\else\def\x{\colorbox{colorRiskYellow}{\ParameterText{acceptable}}}\fi\newline\textsc{\x}.%
 	\\ \hline%
 }%
 
 
 % Draws a triangle, pointing to the mitigation ID
 \makeatletter%
-\newcommand\ReqListMitigation[1]%
+\newcommand\ItemListMitigation[1]%
 {%
 	\@ifundefined{r@sec:#1}%
 	{$\rhd$\space{}\AddLeadingZeros{#1}\newline}%
@@ -434,7 +242,7 @@
 	\IfStrEq{#1}{\empty}{}{\vspace{-1em}}%
 	\textbf{Mitigation measures} &%
 	\foreach \x in {#1} {%
-		\ReqListMitigation{\x}%
+		\ItemListMitigation{\x}%
 	} \\ \hline%			
 }%
 
@@ -442,46 +250,31 @@
 \newcommand{\RiskRIP}[1]%
 {%
 	\gdef\riskRIP{#1}%	
-	~ & \RiskGeneratedText{Considering the risk mitigation measures,} \\
-	\textbf{Residual inner probability} & \RiskGeneratedText{the residual inner probability is expected to be} \RiskParameterText{#1} \RiskGeneratedText{( a chance of 1 : \numprint{\GetInnerProbabilityValue{#1}} / \GetInnerProbabilityText{#1} ),} \\%
+	~ & \GeneratedText{Considering the risk mitigation measures,} \\
+	\textbf{Residual inner probability} & \GeneratedText{the residual inner probability is expected to be} \ParameterText{#1} \GeneratedText{( a chance of 1 : \numprint{\GetInnerProbabilityValue{#1}} / \GetInnerProbabilityText{#1} ),} \\%
 }%
 
 \newcommand{\RiskROP}[1]%
 {%
 	\gdef\riskROP{#1}%	
-	\textbf{Residual outer probability} & \RiskGeneratedText{the residual outer probability to be} \RiskParameterText{#1} \RiskGeneratedText{( a chance of 1 : \numprint{\GetOuterProbabilityValue{#1}} )} \\%
+	\textbf{Residual outer probability} & \GeneratedText{the residual outer probability to be} \ParameterText{#1} \GeneratedText{( a chance of 1 : \numprint{\GetOuterProbabilityValue{#1}} )} \\%
 }%
 
 \newcommand{\RiskRS}[1]%
 {%
 	\gdef\riskRS{#1}%
-	\textbf{Residual severity} & \RiskGeneratedText{and the residual severity to be} \RiskParameterText{#1}\RiskGeneratedText{.} \\ %
+	\textbf{Residual severity} & \GeneratedText{and the residual severity to be} \ParameterText{#1}\GeneratedText{.} \\ %
 }%
 
 \newcommand{\RiskRR}[1]%
 {%
-	\textbf{Residual risk} & \RiskGeneratedText{%
+	\textbf{Residual risk} & \GeneratedText{%
 	With a residual \riskRS~severity and a total residual probability of 1 : \GetTotalProbabilityValue{\riskRIP}{\riskROP} this risk is residually evaluated as} %	
 	\FPeval{\result}{clip(\GetInnerProbabilityValue{\riskRIP} * \GetOuterProbabilityValue{\riskROP})}
-	\ifnum \result < \csuse{riskAcceptance\riskRS}\relax\def\x{\colorbox{colorRiskRed}{not acceptable}}\else\def\x{\colorbox{colorRiskYellow}{\RiskParameterText{acceptable}}}\fi\newline\textsc{\x}.%
+	\ifnum \result < \csuse{riskAcceptance\riskRS}\relax\def\x{\colorbox{colorRiskRed}{not acceptable}}\else\def\x{\colorbox{colorRiskYellow}{\ParameterText{acceptable}}}\fi\newline\textsc{\x}.%
 	\\ \hline%
 }%
 
-
-\makeatletter
-\def\thickhline{%
-  \noalign{\ifnum0=`}\fi\hrule \@height \thickarrayrulewidth \futurelet
-  \reserved@a\@xthickhline}
-\def\@xthickhline{\ifx\reserved@a\thickhline
-  \vskip\doublerulesep
-  \vskip-\thickarrayrulewidth
-  \fi
-  \ifnum0=`{\fi}}
-\makeatother
-
-
-\newlength{\thickarrayrulewidth}
-\setlength{\thickarrayrulewidth}{2\arrayrulewidth}
 
 %
 % Risk environments
@@ -506,8 +299,8 @@
   {%
   \label{req:#1#2}%
   \expandafter\gdef\expandafter\ListOfIDs\expandafter{\ListOfIDs#1#2,}%
-	\def\MyVariants{\RiskVariants{#3}}%
-	\def\MyStatus{\RiskStatus{#4}}%
+	\def\MyVariants{\ItemVariants{#3}}%
+	\def\MyStatus{\ItemStatus{#4}}%
 	\def\MyDate{#5}%
   \footnotesize%
 	\tabularx{\textwidth}{|l|X|}%
